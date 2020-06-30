@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SynapseDemoDataGenerator.Generators
+namespace SynapseDemoDataGenerator.Types
 {
-    public class Rental : Generator
+    public class Rental
     {
         public int RentalId { get; set; }
         public int UserId { get; set; }

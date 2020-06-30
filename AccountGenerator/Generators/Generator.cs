@@ -7,9 +7,23 @@ using System.IO;
 
 namespace SynapseDemoDataGenerator.Generators
 {
-    public class Generator
+    abstract public class Generator
     {
         public int GenerateCount;
+        public int StartId;
+        public int TotalGenerated = 1;
+        public int FilesCreated = 1;
+        public int IntermediaryCount = 0;        
+
+        public Generator(int numberToGenerate, int startingId)
+        {
+            GenerateCount = numberToGenerate;
+            StartId = startingId;
+        }
+
+        abstract public void Generate();
+
+        abstract public void Output();
 
         public static void WriteCSV(string dataType, string csvString, string csvHeader, int filesCreated)
         {

@@ -8,44 +8,25 @@ using Bogus.DataSets;
 
 namespace SynapseDemoDataGenerator.Generators
 {
-    public class UserAccount : Generator
+    class UserAccountGenerator : Generator
     {
-        public int UserId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Address { get; set; }
-        public string State { get; set; }
-        public string ZipCode { get; set; }
-        public string CreditCardNumber { get; set; }
-        public DateTime CreditCardExpiration { get; set; }
-        public DateTime MemberSince { get; set; }
+        public List<Types.UserAccount> users = new List<Types.UserAccount>();
 
-        public void Generate()
+        public UserAccountGenerator(int numberToGenerate, int startingId) : base(numberToGenerate, startingId)
         {
-            //'Seed' for User ID starting values
-            var userIds = 100001;
-
-            //Counter for full run and files created
-            var totalGenerated = 1;
-            var filesCreated = 1;
-            var intermediaryCount = 0;
-
-            Console.WriteLine("Generating User Accounts, starting with UserID {0}", userIds);
-
-            //create CSV buiilder and empty string
-            var csv = new StringBuilder();
-            var newLine = "";
-            var csvHeader = string.Format("UserID,FirstName,LastName,Email,PhoneNumber,Address,State,ZipCode,CreditCardNumber,CreditCardExpiration,MemberSince");
+            //Passing the number to generate and starting ID to the base Generator class
+        }
+        public override void Generate()
+        {
+            Console.WriteLine("Generating User Accounts, starting with UserID {0}", StartId);
 
             //csv.AppendLine(newLine);
 
             //var faker = new Faker("en");
 
-            var newUser = new Faker<UserAccount>("en")
+            var newUser = new Faker<Types.UserAccount>("en")
 
-                .RuleFor(u => u.UserId, f => userIds++)
+                .RuleFor(u => u.UserId, f => StartId++)
                 .RuleFor(u => u.FirstName, (f, u) => f.Name.FirstName(f.Person.Gender))
                 .RuleFor(u => u.LastName, (f, u) => f.Name.LastName(f.Person.Gender))
                 .RuleFor(u => u.Email, (f, u) => f.Internet.Email(u.FirstName, u.LastName))
@@ -57,9 +38,18 @@ namespace SynapseDemoDataGenerator.Generators
                 .RuleFor(u => u.CreditCardExpiration, (f, u) => f.Date.Future(4))
                 .RuleFor(u => u.MemberSince, (f, u) => f.Date.Past(8));
 
-            var users = newUser.Generate(GenerateCount);
+            users = newUser.Generate(GenerateCount);
+        }
 
-            foreach (UserAccount user in users)
+        public override void Output()
+        {
+
+            //create CSV buiilder and empty string
+            var csv = new StringBuilder();
+            var newLine = "";
+            var csvHeader = string.Format("UserID,FirstName,LastName,Email,PhoneNumber,Address,State,ZipCode,CreditCardNumber,CreditCardExpiration,MemberSince");
+
+            foreach (Types.UserAccount user in users)
             {
                 newLine = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}",
                              user.UserId.ToString()
@@ -75,25 +65,25 @@ namespace SynapseDemoDataGenerator.Generators
                              , user.MemberSince.ToString("yyyy-MM-dd"));
                 csv.AppendLine(newLine);
 
-                intermediaryCount++;
+                IntermediaryCount++;
 
                 //Output Status
-                if (totalGenerated % 100000 == 0)
+                if (TotalGenerated % 100000 == 0)
                 {
 
-                    WriteCSV("Accounts", csv.ToString(), csvHeader, filesCreated);
-                    filesCreated++;
-                    Console.WriteLine("Latest User Id: {0}, Total Created: {1}", user.UserId, totalGenerated);
+                    WriteCSV("Accounts", csv.ToString(), csvHeader, FilesCreated);
+                    FilesCreated++;
+                    Console.WriteLine("Latest User Id: {0}, Total Created: {1}", user.UserId, TotalGenerated);
                     csv = new StringBuilder();
-                    intermediaryCount = 0;
+                    IntermediaryCount = 0;
                 }
 
-                totalGenerated++;
+                TotalGenerated++;
             }
             //Flush remaining values generated if any
-            if (intermediaryCount > 0)
+            if (IntermediaryCount > 0)
             {
-                WriteCSV("Accounts", csv.ToString(), csvHeader, filesCreated);
+                WriteCSV("Accounts", csv.ToString(), csvHeader, FilesCreated);
             }
         }
     }
