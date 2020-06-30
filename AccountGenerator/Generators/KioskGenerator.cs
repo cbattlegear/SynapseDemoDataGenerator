@@ -27,7 +27,7 @@ namespace SynapseDemoDataGenerator.Generators
                 .RuleFor(u => u.ZipCode, (f, u) => f.Address.ZipCode(f.Random.Replace("#####")))
                 .RuleFor(u => u.InstallDate, (f, u) => f.Date.Past(4));
 
-            var kiosks = newKiosk.Generate(GenerateCount);
+            kiosks = newKiosk.Generate(GenerateCount);
 
         }
 
