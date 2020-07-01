@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Globalization;
+using ExtensionMethods;
+using CsvHelper;
 
 namespace SynapseDemoDataGenerator.Generators
 {
-    abstract public class Generator
+    abstract public class Generator<T>
     {
         public int GenerateCount;
         public int StartId;
-        public int TotalGenerated = 1;
-        public int FilesCreated = 1;
-        public int IntermediaryCount = 0;        
+        public List<T> items = new List<T>();
 
         public Generator(int numberToGenerate, int startingId)
         {
@@ -23,14 +24,37 @@ namespace SynapseDemoDataGenerator.Generators
 
         abstract public void Generate();
 
-        abstract public void Output();
-
-        public static void WriteCSV(string dataType, string csvString, string csvHeader, int filesCreated)
+        public void OutputCsv(string Filename, int SplitAmount )
         {
-            var csvDir = "C:\\Users\\nilop.NORTHAMERICA\\Downloads\\SynapseDemoData\\";
-            var csvPath = string.Format("{0}\\{1}_part-{2}.csv", csvDir, dataType, filesCreated.ToString());
-            string csvDump = csvHeader + "\n" + csvString;
-            File.WriteAllText(csvPath, csvDump);
+            // Determine the directory name and create it
+            // Currently just taking Item 2 as all our types are three part named currently Probably should make it more generic...
+            string directoryName = typeof(T).ToString().Split('.')[2];
+            Directory.CreateDirectory(directoryName);
+            // If the split amount is zero (or less just to deal with negatives) don't split
+            if (SplitAmount <= 0)
+            {
+                using (var writer = new StreamWriter(directoryName + "\\" + Filename + ".csv"))
+                {
+                    using (var csvout = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                    {
+                        csvout.WriteRecords(items);
+                    }
+                }
+            } else
+            {
+                int fileCount = 1;
+                foreach(var splits in items.Split(SplitAmount))
+                {
+                    using (var writer = new StreamWriter(directoryName + "\\" + Filename + fileCount.ToString() + ".csv"))
+                    {
+                        using (var csvout = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                        {
+                            csvout.WriteRecords(splits);
+                        }
+                    }
+                    fileCount++;
+                }
+            }   
         }
     }
 }

@@ -14,12 +14,12 @@ namespace SynapseDemoDataGenerator.Types
         public int RentalDuration { get; set; }
         public DateTime ScheduledReturnDate { get; set; }
         public int ActualDuration { get; set; }
-        public int ActualReturnDate { get; set; }
+        public DateTime ActualReturnDate { get; set; }
         public int MediaId { get; set; }
         public string MediaType { get; set; }
-        public int RentalAmount { get; set; }
-        public int AdditionalFees { get; set; }
-        public int TotalAmount { get; set; }
+        public decimal RentalAmount { get; set; }
+        public decimal AdditionalFees { get; set; }
+        public decimal TotalAmount { get; set; }
         public int KioskId { get; set; }
     }
 
