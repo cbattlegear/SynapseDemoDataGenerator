@@ -25,6 +25,8 @@ namespace SynapseDemoDataGenerator
         public static int KioskStartID = 10001;
         public static int RentalStartID = 10000;
 
+        public static int SplitSize = 1000;
+
         static void Main(string[] args)
         {
 
@@ -50,7 +52,7 @@ namespace SynapseDemoDataGenerator
             Generators.KioskGenerator kioskgenerator = new Generators.KioskGenerator(generateCount, startID);
 
             kioskgenerator.Generate();
-            kioskgenerator.OutputCsv("Kiosks", 100);
+            kioskgenerator.OutputCsv("Kiosks", SplitSize);
 
             Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.items.Count());
         }
@@ -60,7 +62,7 @@ namespace SynapseDemoDataGenerator
             Generators.RentalGenerator rentalgenerator = new Generators.RentalGenerator(generateCount, startID, accountStartId, accountEndId, kioskStartId, kioskEndId);
 
             rentalgenerator.Generate();
-            rentalgenerator.OutputCsv("Rentals", 1000);
+            rentalgenerator.OutputCsv("Rentals", SplitSize);
 
             Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.items.Count());
         }
@@ -76,7 +78,7 @@ namespace SynapseDemoDataGenerator
             Generators.UserAccountGenerator useraccountgenerator = new Generators.UserAccountGenerator(generateCount, startID);
 
             useraccountgenerator.Generate();
-            useraccountgenerator.OutputCsv("Accounts", 1000);
+            useraccountgenerator.OutputCsv("Accounts", SplitSize);
 
             Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.items.Count());
         }
