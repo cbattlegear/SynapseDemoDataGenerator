@@ -77,6 +77,11 @@ namespace SynapseDemoDataGenerator
                 AccountStartID = commandLineOptions.startId;
                 KioskStartID = commandLineOptions.startId;
                 RentalStartID = commandLineOptions.startId;
+            } else
+            {
+                AccountStartID = commandLineOptions.accountsStartId;
+                KioskStartID = commandLineOptions.kiosksStartId;
+                RentalStartID = commandLineOptions.rentalStartId;
             }
 
             if (commandLineOptions.numberOfEach != 0)
@@ -84,6 +89,11 @@ namespace SynapseDemoDataGenerator
                 AccountAmount = commandLineOptions.numberOfEach;
                 KioskAmount = commandLineOptions.numberOfEach;
                 RentalAmount = commandLineOptions.numberOfEach;
+            } else
+            {
+                AccountAmount = commandLineOptions.numberOfAccounts;
+                KioskAmount = commandLineOptions.numberOfKiosks;
+                RentalAmount = commandLineOptions.numberOfRentals;
             }
 
             SplitSize = commandLineOptions.recordsPerFile;
