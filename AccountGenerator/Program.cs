@@ -96,7 +96,8 @@ namespace SynapseDemoDataGenerator
                 RentalAmount = commandLineOptions.numberOfRentals;
             }
 
-            SplitSize = commandLineOptions.recordsPerFile;
+            //If our split size is over 1,000,000 make it a million as that's where we are limiting list size for memory limitations
+            SplitSize = commandLineOptions.recordsPerFile <= 5000000 ? commandLineOptions.recordsPerFile : 5000000;
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -115,20 +116,20 @@ namespace SynapseDemoDataGenerator
 
         static void GenerateKiosks(int generateCount, int startID, int splitCount)
         {
-            Generators.KioskGenerator kioskgenerator = new Generators.KioskGenerator(generateCount, startID);
+            Generators.KioskGenerator kioskgenerator = new Generators.KioskGenerator(generateCount, startID, splitCount);
 
             kioskgenerator.Generate();
-            kioskgenerator.OutputCsv("Kiosks", splitCount);
+            kioskgenerator.OutputCsv("Kiosks");
 
             Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.items.Count());
         }
 
         static void GenerateRentals(int generateCount, int startID, int accountStartId, int accountEndId, int kioskStartId, int kioskEndId, int splitCount)
         {
-            Generators.RentalGenerator rentalgenerator = new Generators.RentalGenerator(generateCount, startID, accountStartId, accountEndId, kioskStartId, kioskEndId);
+            Generators.RentalGenerator rentalgenerator = new Generators.RentalGenerator(generateCount, startID, accountStartId, accountEndId, kioskStartId, kioskEndId, splitCount);
 
             rentalgenerator.Generate();
-            rentalgenerator.OutputCsv("Rentals", splitCount);
+            rentalgenerator.OutputCsv("Rentals");
 
             Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.items.Count());
         }
@@ -141,10 +142,10 @@ namespace SynapseDemoDataGenerator
 
         static void GenerateAccounts(int generateCount, int startID, int splitCount)
         {
-            Generators.UserAccountGenerator useraccountgenerator = new Generators.UserAccountGenerator(generateCount, startID);
+            Generators.UserAccountGenerator useraccountgenerator = new Generators.UserAccountGenerator(generateCount, startID, splitCount);
 
             useraccountgenerator.Generate();
-            useraccountgenerator.OutputCsv("Accounts", splitCount);
+            useraccountgenerator.OutputCsv("Accounts");
 
             Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.items.Count());
         }

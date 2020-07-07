@@ -5,22 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Bogus;
 using Bogus.DataSets;
+using System.IO;
+using ProtoBuf;
 
 namespace SynapseDemoDataGenerator.Generators
 {
     class UserAccountGenerator : Generator<Types.UserAccount>
     {
-        public UserAccountGenerator(int numberToGenerate, int startingId) : base(numberToGenerate, startingId)
+        public UserAccountGenerator(int numberToGenerate, int startingId, int splitCount) : base(numberToGenerate, startingId, splitCount)
         {
             //Passing the number to generate and starting ID to the base Generator class
         }
         public override void Generate()
         {
             Console.WriteLine("Generating User Accounts, starting with UserID {0}", StartId);
-
-            //csv.AppendLine(newLine);
-
-            //var faker = new Faker("en");
 
             var newUser = new Faker<Types.UserAccount>("en")
 
@@ -36,7 +34,40 @@ namespace SynapseDemoDataGenerator.Generators
                 .RuleFor(u => u.CreditCardExpiration, (f, u) => f.Date.Future(4))
                 .RuleFor(u => u.MemberSince, (f, u) => f.Date.Past(8));
 
-            items = newUser.Generate(GenerateCount);
+            //Putting this in to deal with memory limits around 10 million records
+            if (GenerateCount < 5000000)
+            {
+                Console.WriteLine("Beginning User Account generation in memory...");
+                items = newUser.Generate(GenerateCount);
+                Console.WriteLine("User Account generation complete.");
+            }
+            else
+            {
+                Console.WriteLine("Generating over 5,000,000 items, generating on disk, this may be slow...");
+                Console.WriteLine("Beginning User Account generation on disk...");
+                int filecount = 1;
+                int numberLeft = GenerateCount;
+                Directory.CreateDirectory("CacheData");
+
+                // Handle large file scenarios with no split
+                // Essentially if someone says they want 40mil records, but want them all in one file, we still need to decide where to cache at.
+                int splitHold = SplitAmount;
+                if (SplitAmount <= 0)
+                    splitHold = 5000000;
+
+                while (numberLeft > 0)
+                {
+                    int createAmount = splitHold > numberLeft ? numberLeft : splitHold;
+                    items = newUser.Generate(createAmount);
+                    using (FileStream fs = new FileStream("CacheData\\UserCache-" + filecount.ToString() + ".bin", FileMode.Create))
+                    {
+                        Serializer.Serialize(fs, items);
+                    }
+                    filecount++;
+                    numberLeft = numberLeft - createAmount;
+                }
+                Console.WriteLine("User Account generation complete.");
+            }
         }
     }
 }
