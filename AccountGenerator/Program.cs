@@ -17,7 +17,7 @@ using System.Globalization;
 
 namespace SynapseDemoDataGenerator
 {
-    public class CommandLineOptions
+    public class RetailCommandLineOptions
     {
         public int numberOfAccounts { get; set; }
         public int numberOfKiosks { get; set; }
@@ -45,7 +45,12 @@ namespace SynapseDemoDataGenerator
 
         public static async Task<int> Main(params string[] args)
         {
-            var command = new RootCommand
+            var root = new RootCommand
+            {
+                
+            };
+
+            var retail = new Command("retail")
             {
                 new Option<int>("--numberofaccounts", getDefaultValue: () => 10000, description: "The number of User Accounts to generate"),
                 new Option<int>("--numberofkiosks", getDefaultValue: () => 1000, description: "The number of Kiosks to generate"),
@@ -60,18 +65,56 @@ namespace SynapseDemoDataGenerator
                 new Option<int>("--numberofeach", description: "(Optional) Use to generate the same number of objects for all types"),
                 new Option<int>("--startid", description: "(Optional) Use to have all objects start on the same ID number")
             };
+            
+            retail.AddAlias("rental");
+            retail.Description = "Generate Retail data from a simulated Rental company. It will include User Accounts, Kiosks, and Rental Transactions";
 
-            command.Handler = CommandHandler.Create(
-                (CommandLineOptions commandLineOptions) =>
+            retail.Handler = CommandHandler.Create(
+                (RetailCommandLineOptions commandLineOptions) =>
                 {
-                    Generate(commandLineOptions);
+                    GenerateRetail(commandLineOptions);
                 }
                 );
 
-            return await command.InvokeAsync(args);
+            root.Add(retail);
+
+            var healthcare = new Command("healthcare");
+            healthcare.Description = "Currently Unimplemented Healthcare data generation";
+            healthcare.Handler = CommandHandler.Create(
+                () =>
+                {
+                    Console.WriteLine("Healthcare data generation is currently not implemented");
+                }
+                );
+
+            root.Add(healthcare);
+
+            var financial = new Command("financial");
+            financial.Description = "Currently Unimplemented Financial data generation";
+            financial.Handler = CommandHandler.Create(
+                () =>
+                {
+                    Console.WriteLine("Financial data generation is currently not implemented");
+                }
+                );
+
+            root.Add(financial);
+
+            var manufacturing = new Command("manufacturing");
+            manufacturing.Description = "Currently Unimplemented Manufacturing data generation";
+            manufacturing.Handler = CommandHandler.Create(
+                () =>
+                {
+                    Console.WriteLine("Manufacturing data generation is currently not implemented");
+                }
+                );
+
+            root.Add(manufacturing);
+
+            return await root.InvokeAsync(args);
         }
 
-        static public void Generate(CommandLineOptions commandLineOptions)
+        static public void GenerateRetail(RetailCommandLineOptions commandLineOptions)
         {
             if(commandLineOptions.startId != 0)
             {
