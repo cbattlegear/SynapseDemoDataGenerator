@@ -24,6 +24,7 @@ namespace SynapseDemoDataGenerator.Generators
 
                 .RuleFor(u => u.KioskId, f => StartId++)
                 .RuleFor(u => u.Address, (f, u) => f.Address.StreetAddress())
+                .RuleFor(u => u.State, (f, u) => f.Address.StateAbbr())
                 .RuleFor(u => u.ZipCode, (f, u) => f.Address.ZipCode(f.Random.Replace("#####")))
                 .RuleFor(u => u.InstallDate, (f, u) => f.Date.Past(4));
 

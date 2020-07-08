@@ -15,8 +15,10 @@ namespace SynapseDemoDataGenerator.Types
         [ProtoMember(2)]
         public string Address { get; set; }
         [ProtoMember(3)]
-        public string ZipCode { get; set; }
+        public string State { get; set; }
         [ProtoMember(4)]
+        public string ZipCode { get; set; }
+        [ProtoMember(5)]
         public DateTime InstallDate { get; set; }
     }
 
