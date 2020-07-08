@@ -36,7 +36,7 @@ namespace SynapseDemoDataGenerator.Generators
             Directory.CreateDirectory(directoryName);
             Console.WriteLine("Beginning to write {0} CSV files.", directoryName);
             // Dealing with large generation memory issues
-            if (GenerateCount < 5000000)
+            if (GenerateCount < Properties.Settings.Default.UseDiskThreshold)
             {
                 // If the split amount is zero (or less just to deal with negatives) don't split
                 if (SplitAmount <= 0)

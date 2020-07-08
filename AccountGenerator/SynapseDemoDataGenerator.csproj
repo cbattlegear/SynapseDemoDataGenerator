@@ -94,6 +94,11 @@
     <Compile Include="Generators\KioskGenerator.cs" />
     <Compile Include="Generators\RentalGenerator.cs" />
     <Compile Include="Generators\UserAccountGenerator.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Types\Rental.cs" />
     <Compile Include="Types\UserAccount.cs" />
     <Compile Include="Types\Kiosk.cs" />
@@ -103,6 +108,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

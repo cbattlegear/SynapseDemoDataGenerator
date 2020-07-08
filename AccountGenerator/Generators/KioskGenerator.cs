@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Bogus;
 using System.IO;
 using ProtoBuf;
+using System.Globalization;
 
 namespace SynapseDemoDataGenerator.Generators
 {
@@ -29,7 +30,7 @@ namespace SynapseDemoDataGenerator.Generators
                 .RuleFor(u => u.InstallDate, (f, u) => f.Date.Past(4));
 
             //Putting this in to deal with memory limits around 10 million records
-            if (GenerateCount < 5000000)
+            if (GenerateCount < Properties.Settings.Default.UseDiskThreshold)
             {
                 Console.WriteLine("Beginning Kiosk generation in memory...");
                 items = newKiosk.Generate(GenerateCount);
@@ -38,7 +39,7 @@ namespace SynapseDemoDataGenerator.Generators
             }
             else
             {
-                Console.WriteLine("Generating over 5,000,000 items, generating on disk, this may be slow...");
+                Console.WriteLine("Generating over {0} items, generating on disk, this may be slow...", Properties.Settings.Default.UseDiskThreshold.ToString("N1", CultureInfo.InvariantCulture));
                 Console.WriteLine("Beginning Kiosk generation on disk...");
                 int filecount = 1;
                 int numberLeft = GenerateCount;
@@ -48,7 +49,7 @@ namespace SynapseDemoDataGenerator.Generators
                 // Essentially if someone says they want 40mil records, but want them all in one file, we still need to decide where to cache at.
                 int splitHold = SplitAmount;
                 if (SplitAmount <= 0)
-                    splitHold = 5000000;
+                    splitHold = Properties.Settings.Default.UseDiskThreshold;
 
                 while (numberLeft > 0)
                 {

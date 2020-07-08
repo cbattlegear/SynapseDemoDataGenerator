@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace SynapseDemoDataGenerator
 {
@@ -40,7 +41,7 @@ namespace SynapseDemoDataGenerator
         public static int KioskStartID = 10001;
         public static int RentalStartID = 10001;
 
-        public static int SplitSize = 1000;
+        public static int SplitSize = 0;
 
         public static async Task<int> Main(params string[] args)
         {
@@ -96,8 +97,8 @@ namespace SynapseDemoDataGenerator
                 RentalAmount = commandLineOptions.numberOfRentals;
             }
 
-            //If our split size is over 1,000,000 make it a million as that's where we are limiting list size for memory limitations
-            SplitSize = commandLineOptions.recordsPerFile <= 5000000 ? commandLineOptions.recordsPerFile : 5000000;
+            //If our split size is over the set limit (in Settings) make it a the setting value as that's where we are limiting list size for memory limitations
+            SplitSize = commandLineOptions.recordsPerFile <= Properties.Settings.Default.UseDiskThreshold ? commandLineOptions.recordsPerFile : Properties.Settings.Default.UseDiskThreshold;
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -121,7 +122,7 @@ namespace SynapseDemoDataGenerator
             kioskgenerator.Generate();
             kioskgenerator.OutputCsv("Kiosks");
 
-            Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.ItemsCreated);
+            Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.ItemsCreated.ToString("N1", CultureInfo.InvariantCulture));
         }
 
         static void GenerateRentals(int generateCount, int startID, int accountStartId, int accountEndId, int kioskStartId, int kioskEndId, int splitCount)
@@ -131,7 +132,7 @@ namespace SynapseDemoDataGenerator
             rentalgenerator.Generate();
             rentalgenerator.OutputCsv("Rentals");
 
-            Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.ItemsCreated);
+            Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.ItemsCreated.ToString("N1", CultureInfo.InvariantCulture));
         }
 
         static void StreamingEvents(int generateCount)
@@ -147,7 +148,7 @@ namespace SynapseDemoDataGenerator
             useraccountgenerator.Generate();
             useraccountgenerator.OutputCsv("Accounts");
 
-            Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.ItemsCreated);
+            Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.ItemsCreated.ToString("N1", CultureInfo.InvariantCulture));
         }
 
     }
