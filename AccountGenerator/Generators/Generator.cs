@@ -17,6 +17,7 @@ namespace SynapseDemoDataGenerator.Generators
         public int StartId;
         public int SplitAmount;
         public List<T> items = new List<T>();
+        public int ItemsCreated = 0;
 
         public Generator(int numberToGenerate, int startingId, int splitCount)
         {

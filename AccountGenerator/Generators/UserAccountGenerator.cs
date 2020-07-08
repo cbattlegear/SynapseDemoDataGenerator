@@ -39,6 +39,7 @@ namespace SynapseDemoDataGenerator.Generators
             {
                 Console.WriteLine("Beginning User Account generation in memory...");
                 items = newUser.Generate(GenerateCount);
+                ItemsCreated = items.Count();
                 Console.WriteLine("User Account generation complete.");
             }
             else
@@ -65,6 +66,7 @@ namespace SynapseDemoDataGenerator.Generators
                     }
                     filecount++;
                     numberLeft = numberLeft - createAmount;
+                    ItemsCreated += items.Count();
                 }
                 Console.WriteLine("User Account generation complete.");
             }

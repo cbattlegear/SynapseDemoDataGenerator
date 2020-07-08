@@ -59,6 +59,7 @@ namespace SynapseDemoDataGenerator.Generators
             {
                 Console.WriteLine("Beginning Rental generation in memory...");
                 items = newRental.Generate(GenerateCount);
+                ItemsCreated = items.Count();
                 Console.WriteLine("Rental generation complete.");
             } else
             {
@@ -84,6 +85,7 @@ namespace SynapseDemoDataGenerator.Generators
                     }
                     filecount++;
                     numberLeft = numberLeft - createAmount;
+                    ItemsCreated += items.Count();
                 }
                 Console.WriteLine("Rental generation complete.");
             }

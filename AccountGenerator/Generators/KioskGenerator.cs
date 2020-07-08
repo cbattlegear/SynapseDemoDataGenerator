@@ -33,6 +33,7 @@ namespace SynapseDemoDataGenerator.Generators
             {
                 Console.WriteLine("Beginning Kiosk generation in memory...");
                 items = newKiosk.Generate(GenerateCount);
+                ItemsCreated = items.Count();
                 Console.WriteLine("Kiosk generation complete.");
             }
             else
@@ -59,6 +60,7 @@ namespace SynapseDemoDataGenerator.Generators
                     }
                     filecount++;
                     numberLeft = numberLeft - createAmount;
+                    ItemsCreated += items.Count();
                 }
                 Console.WriteLine("Kiosk generation complete.");
             }
