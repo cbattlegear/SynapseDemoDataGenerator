@@ -45,7 +45,7 @@ namespace SynapseDemoDataGenerator.Generators
             }
             else
             {
-                Console.WriteLine("Generating over {0} items, generating on disk, this may be slow...", Properties.Settings.Default.UseDiskThreshold.ToString("N1", CultureInfo.InvariantCulture));
+                Console.WriteLine("Generating over {0} items, generating on disk, this may be slow...", Properties.Settings.Default.UseDiskThreshold.ToString("N0", CultureInfo.InvariantCulture));
                 Console.WriteLine("Beginning User Account generation on disk...");
                 int filecount = 1;
                 int numberLeft = GenerateCount;

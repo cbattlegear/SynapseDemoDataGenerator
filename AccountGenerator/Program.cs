@@ -122,7 +122,7 @@ namespace SynapseDemoDataGenerator
             kioskgenerator.Generate();
             kioskgenerator.OutputCsv("Kiosks");
 
-            Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.ItemsCreated.ToString("N1", CultureInfo.InvariantCulture));
+            Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
         static void GenerateRentals(int generateCount, int startID, int accountStartId, int accountEndId, int kioskStartId, int kioskEndId, int splitCount)
@@ -132,7 +132,7 @@ namespace SynapseDemoDataGenerator
             rentalgenerator.Generate();
             rentalgenerator.OutputCsv("Rentals");
 
-            Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.ItemsCreated.ToString("N1", CultureInfo.InvariantCulture));
+            Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
         static void StreamingEvents(int generateCount)
@@ -148,7 +148,7 @@ namespace SynapseDemoDataGenerator
             useraccountgenerator.Generate();
             useraccountgenerator.OutputCsv("Accounts");
 
-            Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.ItemsCreated.ToString("N1", CultureInfo.InvariantCulture));
+            Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
     }
