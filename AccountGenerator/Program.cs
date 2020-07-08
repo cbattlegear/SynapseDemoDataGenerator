@@ -21,8 +21,8 @@ namespace SynapseDemoDataGenerator
         public int numberOfAccounts { get; set; }
         public int numberOfKiosks { get; set; }
         public int numberOfRentals { get; set; }
-        public int accountsStartId { get; set; }
-        public int kiosksStartId { get; set; }
+        public int accountStartId { get; set; }
+        public int kioskStartId { get; set; }
         public int rentalStartId { get; set; }
         public int recordsPerFile { get; set; }
         public int numberOfEach { get; set; }
@@ -79,8 +79,8 @@ namespace SynapseDemoDataGenerator
                 RentalStartID = commandLineOptions.startId;
             } else
             {
-                AccountStartID = commandLineOptions.accountsStartId;
-                KioskStartID = commandLineOptions.kiosksStartId;
+                AccountStartID = commandLineOptions.accountStartId;
+                KioskStartID = commandLineOptions.kioskStartId;
                 RentalStartID = commandLineOptions.rentalStartId;
             }
 
