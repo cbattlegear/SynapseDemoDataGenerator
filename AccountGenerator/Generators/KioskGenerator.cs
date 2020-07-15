@@ -19,6 +19,7 @@ namespace SynapseDemoDataGenerator.Generators
         }
         public override void Generate()
         {
+            int DiskUseThreshold = Convert.ToInt32(Program.Configuration["UseDiskThreshold"]);
             Console.WriteLine("Generating Kiosks, starting with kiosk ID {0}", StartId);
 
             var newKiosk = new Faker<Types.Kiosk>("en")
@@ -30,7 +31,7 @@ namespace SynapseDemoDataGenerator.Generators
                 .RuleFor(u => u.InstallDate, (f, u) => f.Date.Past(4));
 
             //Putting this in to deal with memory limits around 10 million records
-            if (GenerateCount < Properties.Settings.Default.UseDiskThreshold)
+            if (GenerateCount < DiskUseThreshold)
             {
                 Console.WriteLine("Beginning Kiosk generation in memory...");
                 items = newKiosk.Generate(GenerateCount);
@@ -39,7 +40,7 @@ namespace SynapseDemoDataGenerator.Generators
             }
             else
             {
-                Console.WriteLine("Generating over {0} items, generating on disk, this may be slow...", Properties.Settings.Default.UseDiskThreshold.ToString("N0", CultureInfo.InvariantCulture));
+                Console.WriteLine("Generating over {0} items, generating on disk, this may be slow...", DiskUseThreshold.ToString("N0", CultureInfo.InvariantCulture));
                 Console.WriteLine("Beginning Kiosk generation on disk...");
                 int filecount = 1;
                 int numberLeft = GenerateCount;
@@ -49,7 +50,7 @@ namespace SynapseDemoDataGenerator.Generators
                 // Essentially if someone says they want 40mil records, but want them all in one file, we still need to decide where to cache at.
                 int splitHold = SplitAmount;
                 if (SplitAmount <= 0)
-                    splitHold = Properties.Settings.Default.UseDiskThreshold;
+                    splitHold = DiskUseThreshold;
 
                 while (numberLeft > 0)
                 {

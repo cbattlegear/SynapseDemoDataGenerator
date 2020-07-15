@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
-using Bogus;
-using Bogus.DataSets;
-using Newtonsoft.Json;
 using System.IO;
-using System.Threading;
 using System.Diagnostics;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Runtime.InteropServices;
 using System.Globalization;
+using Microsoft.Extensions.Configuration;
 
 namespace SynapseDemoDataGenerator
 {
@@ -47,7 +39,7 @@ namespace SynapseDemoDataGenerator
         {
             var root = new RootCommand
             {
-                
+
             };
 
             var retail = new Command("retail")
@@ -65,7 +57,7 @@ namespace SynapseDemoDataGenerator
                 new Option<int>("--numberofeach", description: "(Optional) Use to generate the same number of objects for all types"),
                 new Option<int>("--startid", description: "(Optional) Use to have all objects start on the same ID number")
             };
-            
+
             retail.AddAlias("rental");
             retail.Description = "Generate Retail data from a simulated Rental company. It will include User Accounts, Kiosks, and Rental Transactions";
 
@@ -116,12 +108,14 @@ namespace SynapseDemoDataGenerator
 
         static public void GenerateRetail(RetailCommandLineOptions commandLineOptions)
         {
-            if(commandLineOptions.startId != 0)
+            int DiskUseThreshold = Convert.ToInt32(Program.Configuration["UseDiskThreshold"]);
+            if (commandLineOptions.startId != 0)
             {
                 AccountStartID = commandLineOptions.startId;
                 KioskStartID = commandLineOptions.startId;
                 RentalStartID = commandLineOptions.startId;
-            } else
+            }
+            else
             {
                 AccountStartID = commandLineOptions.accountStartId;
                 KioskStartID = commandLineOptions.kioskStartId;
@@ -133,7 +127,8 @@ namespace SynapseDemoDataGenerator
                 AccountAmount = commandLineOptions.numberOfEach;
                 KioskAmount = commandLineOptions.numberOfEach;
                 RentalAmount = commandLineOptions.numberOfEach;
-            } else
+            }
+            else
             {
                 AccountAmount = commandLineOptions.numberOfAccounts;
                 KioskAmount = commandLineOptions.numberOfKiosks;
@@ -141,7 +136,7 @@ namespace SynapseDemoDataGenerator
             }
 
             //If our split size is over the set limit (in Settings) make it a the setting value as that's where we are limiting list size for memory limitations
-            SplitSize = commandLineOptions.recordsPerFile <= Properties.Settings.Default.UseDiskThreshold ? commandLineOptions.recordsPerFile : Properties.Settings.Default.UseDiskThreshold;
+            SplitSize = commandLineOptions.recordsPerFile <= DiskUseThreshold ? commandLineOptions.recordsPerFile : DiskUseThreshold;
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -194,5 +189,17 @@ namespace SynapseDemoDataGenerator
             Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
+        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appconfig.json", optional: false, reloadOnChange: true)
+
+            // This allows us to set a system environment variable to Development
+            // when running a compiled Release build on a local workstation, so we don't
+            // have to alter our real production appsettings file for compiled-local-test.
+            //.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+
+            .AddEnvironmentVariables()
+            //.AddAzureKeyVault()
+            .Build();
     }
 }
