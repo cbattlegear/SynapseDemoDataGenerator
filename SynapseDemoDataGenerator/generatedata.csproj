@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>SynapseDemoDataGenerator</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.ServiceModel" />
