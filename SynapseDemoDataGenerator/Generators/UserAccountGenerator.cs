@@ -8,6 +8,7 @@ using Bogus.DataSets;
 using System.IO;
 using ProtoBuf;
 using System.Globalization;
+using ExtensionMethods;
 
 namespace SynapseDemoDataGenerator.Generators
 {
@@ -32,7 +33,8 @@ namespace SynapseDemoDataGenerator.Generators
                 .RuleFor(u => u.Address, (f, u) => f.Address.StreetAddress())
                 .RuleFor(u => u.State, (f, u) => f.Address.StateAbbr())
                 .RuleFor(u => u.ZipCode, (f, u) => f.Address.ZipCode(f.Random.Replace("#####")))
-                .RuleFor(u => u.CreditCardNumber, (f, u) => f.Finance.CreditCardNumber(CardType.Visa))
+                // Removed Visa to work around https://github.com/bchavez/Bogus/issues/313
+                .RuleFor(u => u.CreditCardNumber, (f, u) => f.Finance.CreditCardNumber(new[] { CardType.Discover, CardType.AmericanExpress, CardType.Mastercard }.AnyOne()))
                 .RuleFor(u => u.CreditCardExpiration, (f, u) => f.Date.Future(4))
                 .RuleFor(u => u.MemberSince, (f, u) => f.Date.Past(8));
 
