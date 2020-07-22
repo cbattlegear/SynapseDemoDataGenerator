@@ -28,20 +28,20 @@ namespace SynapseDemoDataGenerator.Generators
 
         abstract public void Generate();
 
-        public void OutputCsv(string Filename)
+        public void OutputCsv(string Filename, string outputDirectoryBase)
         {
             // Determine the directory name and create it
             // Currently just taking Item 2 as all our types are three part named currently Probably should make it more generic...
             string directoryName = typeof(T).ToString().Split('.')[2];
-            Directory.CreateDirectory(directoryName);
-            Console.WriteLine("Beginning to write {0} CSV files.", directoryName);
+            Directory.CreateDirectory(outputDirectoryBase + directoryName);
+            Console.WriteLine("Beginning to write CSV files to {0}.", outputDirectoryBase + directoryName);
             // Dealing with large generation memory issues
             if (GenerateCount < Convert.ToInt32(Program.Configuration["UseDiskThreshold"]))
             {
                 // If the split amount is zero (or less just to deal with negatives) don't split
                 if (SplitAmount <= 0)
                 {
-                    using (var writer = new StreamWriter(directoryName + "\\" + Filename + ".csv"))
+                    using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + ".csv"))
                     {
                         using (var csvout = new CsvWriter(writer, CultureInfo.InvariantCulture))
                         {
@@ -54,7 +54,7 @@ namespace SynapseDemoDataGenerator.Generators
                     int fileCount = 1;
                     foreach (var splits in items.Split(SplitAmount))
                     {
-                        using (var writer = new StreamWriter(directoryName + "\\" + Filename + fileCount.ToString() + ".csv"))
+                        using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + fileCount.ToString() + ".csv"))
                         {
                             using (var csvout = new CsvWriter(writer, CultureInfo.InvariantCulture))
                             {
@@ -79,7 +79,7 @@ namespace SynapseDemoDataGenerator.Generators
                             items = Serializer.DeserializeItems<T>(cache, PrefixStyle.Base128, 1).ToList();
                             if (firstFile)
                             {
-                                using (var writer = new StreamWriter(directoryName + "\\" + Filename + ".csv"))
+                                using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + ".csv"))
                                 {
                                     using (var csvout = new CsvWriter(writer, CultureInfo.InvariantCulture))
                                     {
@@ -90,7 +90,7 @@ namespace SynapseDemoDataGenerator.Generators
                             }
                             else
                             {
-                                using (var stream = File.Open(directoryName + "\\" + Filename + ".csv", FileMode.Append))
+                                using (var stream = File.Open(outputDirectoryBase + directoryName + "\\" + Filename + ".csv", FileMode.Append))
                                 using (var writer = new StreamWriter(stream))
                                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                                 {
@@ -113,7 +113,7 @@ namespace SynapseDemoDataGenerator.Generators
                         {
                             items = Serializer.DeserializeItems<T>(cache, PrefixStyle.Base128, 1).ToList();
 
-                            using (var writer = new StreamWriter(directoryName + "\\" + Filename + fileCount.ToString() + ".csv"))
+                            using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + fileCount.ToString() + ".csv"))
                             {
                                 using (var csvout = new CsvWriter(writer, CultureInfo.InvariantCulture))
                                 {
@@ -128,7 +128,7 @@ namespace SynapseDemoDataGenerator.Generators
                 // Wipe our cache directory after writing our data
                 Directory.Delete("CacheData\\", true);
             }
-            Console.WriteLine("Finished writing {0} CSV files.", directoryName);
+            Console.WriteLine("Finished writing CSV files to {0}.", outputDirectoryBase + directoryName);
         }
     }
 }

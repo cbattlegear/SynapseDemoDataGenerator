@@ -20,6 +20,7 @@ namespace SynapseDemoDataGenerator
         public int recordsPerFile { get; set; }
         public int numberOfEach { get; set; }
         public int startId { get; set; }
+        public DirectoryInfo output { get; set; }
     }
     class Program
     {
@@ -34,6 +35,8 @@ namespace SynapseDemoDataGenerator
         public static int RentalStartID = 10001;
 
         public static int SplitSize = 0;
+
+        private static Stopwatch stopWatch = new Stopwatch();
 
         public static async Task<int> Main(params string[] args)
         {
@@ -55,7 +58,9 @@ namespace SynapseDemoDataGenerator
                 new Option<int>("--recordsperfile", getDefaultValue: () => 0, description: "(Optional) Number of records to insert into a file before creating a new file"),
 
                 new Option<int>("--numberofeach", description: "(Optional) Use to generate the same number of objects for all types"),
-                new Option<int>("--startid", description: "(Optional) Use to have all objects start on the same ID number")
+                new Option<int>("--startid", description: "(Optional) Use to have all objects start on the same ID number"),
+
+                new Option<string>("--output", description: "(Optional) Output directory for the created data")
             };
 
             retail.AddAlias("rental");
@@ -108,6 +113,9 @@ namespace SynapseDemoDataGenerator
 
         static public void GenerateRetail(RetailCommandLineOptions commandLineOptions)
         {
+            string outputDirectory = VerifyDirectory(commandLineOptions.output);
+            Console.WriteLine(outputDirectory);
+
             int DiskUseThreshold = Convert.ToInt32(Program.Configuration["UseDiskThreshold"]);
             if (commandLineOptions.startId != 0)
             {
@@ -138,12 +146,25 @@ namespace SynapseDemoDataGenerator
             //If our split size is over the set limit (in Settings) make it a the setting value as that's where we are limiting list size for memory limitations
             SplitSize = commandLineOptions.recordsPerFile <= DiskUseThreshold ? commandLineOptions.recordsPerFile : DiskUseThreshold;
 
-            Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            GenerateAccounts(AccountAmount, AccountStartID, SplitSize);
-            GenerateKiosks(KioskAmount, KioskStartID, SplitSize);
-            GenerateRentals(RentalAmount, RentalStartID, AccountStartID, AccountStartID + AccountAmount, KioskStartID, KioskStartID + KioskAmount, SplitSize);
+            GenerateAccounts(AccountAmount, AccountStartID, SplitSize, outputDirectory);
+            GenerateKiosks(KioskAmount, KioskStartID, SplitSize, outputDirectory);
+            GenerateRentals(RentalAmount, RentalStartID, AccountStartID, AccountStartID + AccountAmount, KioskStartID, KioskStartID + KioskAmount, SplitSize, outputDirectory);
+
+            TimeSpan ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("Total RunTime " + elapsedTime);
+        }
+
+        static void GenerateKiosks(int generateCount, int startID, int splitCount, string outputDirectory)
+        {
+            Generators.KioskGenerator kioskgenerator = new Generators.KioskGenerator(generateCount, startID, splitCount);
+
+            kioskgenerator.Generate();
 
             TimeSpan ts = stopWatch.Elapsed;
             // Format and display the TimeSpan value.
@@ -151,24 +172,40 @@ namespace SynapseDemoDataGenerator
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds / 10);
             Console.WriteLine("RunTime " + elapsedTime);
-        }
 
-        static void GenerateKiosks(int generateCount, int startID, int splitCount)
-        {
-            Generators.KioskGenerator kioskgenerator = new Generators.KioskGenerator(generateCount, startID, splitCount);
+            kioskgenerator.OutputCsv("Kiosks", outputDirectory);
 
-            kioskgenerator.Generate();
-            kioskgenerator.OutputCsv("Kiosks");
+            ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
 
             Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
-        static void GenerateRentals(int generateCount, int startID, int accountStartId, int accountEndId, int kioskStartId, int kioskEndId, int splitCount)
+        static void GenerateRentals(int generateCount, int startID, int accountStartId, int accountEndId, int kioskStartId, int kioskEndId, int splitCount, string outputDirectory)
         {
             Generators.RentalGenerator rentalgenerator = new Generators.RentalGenerator(generateCount, startID, accountStartId, accountEndId, kioskStartId, kioskEndId, splitCount);
 
             rentalgenerator.Generate();
-            rentalgenerator.OutputCsv("Rentals");
+
+            TimeSpan ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
+
+            rentalgenerator.OutputCsv("Rentals", outputDirectory);
+
+            ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
 
             Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
@@ -179,15 +216,57 @@ namespace SynapseDemoDataGenerator
             //var Json = ConvertToJson.Dump("OBJECT HERE");
         }
 
-        static void GenerateAccounts(int generateCount, int startID, int splitCount)
+        static void GenerateAccounts(int generateCount, int startID, int splitCount, string outputDirectory)
         {
             Generators.UserAccountGenerator useraccountgenerator = new Generators.UserAccountGenerator(generateCount, startID, splitCount);
 
             useraccountgenerator.Generate();
-            useraccountgenerator.OutputCsv("Accounts");
+
+            TimeSpan ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
+
+            useraccountgenerator.OutputCsv("Accounts", outputDirectory);
+
+            ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
 
             Console.WriteLine("Completed! {0} Total Accounts created\n", useraccountgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
+
+#nullable enable
+        static string VerifyDirectory(DirectoryInfo? di)
+        {
+            if(di != null)
+            {
+                if (!di.Exists)
+                {
+
+                    di.Create();
+                }
+
+                if (di.ToString().EndsWith('\\'))
+                {
+                    return di.ToString();
+                }
+                else
+                {
+                    return di.ToString() + "\\";
+                }
+            } else
+            {
+                return "";
+            }
+            
+        }
+#nullable disable
 
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

@@ -2,7 +2,7 @@
   "profiles": {
     "SynapseDemoDataGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "rental --numberofaccounts 1948534 --numberofkiosks 11783 --numberofrentals 20000000 --recordsperfile 1000000"
+      "commandLineArgs": "rental --numberofaccounts 1948534 --numberofkiosks 11783 --numberofrentals 20000000 --recordsperfile 1000000 --output C:\\test\\ouput\\"
     }
   }
 }

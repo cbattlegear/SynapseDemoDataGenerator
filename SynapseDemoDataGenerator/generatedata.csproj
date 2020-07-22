@@ -4,6 +4,9 @@
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>SynapseDemoDataGenerator</RootNamespace>
+    <Authors>Cameron Battagler</Authors>
+    <RepositoryUrl>https://github.com/cbattlegear/SynapseDemoDataGenerator</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.ServiceModel" />
