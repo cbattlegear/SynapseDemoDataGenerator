@@ -81,7 +81,7 @@ namespace SynapseDemoDataGenerator.Generators
             // Create a list of movie ids with related lengths to have consistent durations throughout a single generation
             int numberOfMovies = 1000;
             //Create our array of movies and give them a good shake
-            var movieArray = Enumerable.Range(1, numberOfMovies+1).ToArray();
+            var movieArray = Enumerable.Range(1, numberOfMovies).ToArray();
             r.Shuffle(movieArray);
 
             int[] movieLengthArray = new int[numberOfMovies];
@@ -103,7 +103,7 @@ namespace SynapseDemoDataGenerator.Generators
                 //Pick our movie
                 int movieId = movieArray[WeightedInteger(0, 999)];
                 //How long is the movie?
-                int movieLength = movieLengthArray[movieId];
+                int movieLength = movieLengthArray[movieId-1];
                 //Get that start time
                 DateTime startMovie = RandomDateTime(r);
                 //Get a random user

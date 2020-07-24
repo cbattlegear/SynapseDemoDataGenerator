@@ -40,7 +40,7 @@ namespace SynapseDemoDataGenerator.Generators
             var mediaTypes = new[] { "BetaMax", "DVD", "Bluray", "VHS", "Laserdisc"};
 
             //Create our array of movies and give them a good shake
-            var movieArray = Enumerable.Range(1, 1001).ToArray();
+            var movieArray = Enumerable.Range(1, 1000).ToArray();
             rand.Shuffle(movieArray);
 
             var newRental = new Faker<Types.Rental>("en")
