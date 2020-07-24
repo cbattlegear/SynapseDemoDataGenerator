@@ -14,6 +14,7 @@ namespace SynapseDemoDataGenerator
         public int numberOfAccounts { get; set; }
         public int numberOfKiosks { get; set; }
         public int numberOfRentals { get; set; }
+        public int numberOfStreamEvents { get; set; }
         public int accountStartId { get; set; }
         public int kioskStartId { get; set; }
         public int rentalStartId { get; set; }
@@ -28,6 +29,7 @@ namespace SynapseDemoDataGenerator
         public static int AccountAmount = 10000;
         public static int KioskAmount = 1000;
         public static int RentalAmount = 10000;
+        public static int StreamEventAmount = 10000;
 
         //Starting IDs for each item type
         public static int AccountStartID = 100001;
@@ -50,6 +52,7 @@ namespace SynapseDemoDataGenerator
                 new Option<int>("--numberofaccounts", getDefaultValue: () => 10000, description: "The number of User Accounts to generate"),
                 new Option<int>("--numberofkiosks", getDefaultValue: () => 1000, description: "The number of Kiosks to generate"),
                 new Option<int>("--numberofrentals", getDefaultValue: () => 10000, description: "The number of Rental Transactions to generate"),
+                new Option<int>("--numberofstreamevents", getDefaultValue: () => 10000, description: "The number of Streaming Events to generate"),
 
                 new Option<int>("--accountstartid", getDefaultValue: () => 100001, description: "The starting id number (as an integer) for the generated User Accounts"),
                 new Option<int>("--kioskstartid", getDefaultValue: () => 10001, description: "The starting id number (as an integer) for the generated Kiosks"),
@@ -135,12 +138,14 @@ namespace SynapseDemoDataGenerator
                 AccountAmount = commandLineOptions.numberOfEach;
                 KioskAmount = commandLineOptions.numberOfEach;
                 RentalAmount = commandLineOptions.numberOfEach;
+                StreamEventAmount = commandLineOptions.numberOfEach;
             }
             else
             {
                 AccountAmount = commandLineOptions.numberOfAccounts;
                 KioskAmount = commandLineOptions.numberOfKiosks;
                 RentalAmount = commandLineOptions.numberOfRentals;
+                StreamEventAmount = commandLineOptions.numberOfStreamEvents;
             }
 
             //If our split size is over the set limit (in Settings) make it a the setting value as that's where we are limiting list size for memory limitations
@@ -151,6 +156,7 @@ namespace SynapseDemoDataGenerator
             GenerateAccounts(AccountAmount, AccountStartID, SplitSize, outputDirectory);
             GenerateKiosks(KioskAmount, KioskStartID, SplitSize, outputDirectory);
             GenerateRentals(RentalAmount, RentalStartID, AccountStartID, AccountStartID + AccountAmount, KioskStartID, KioskStartID + KioskAmount, SplitSize, outputDirectory);
+            GenerateStreamEvents(StreamEventAmount, AccountStartID, AccountStartID + AccountAmount, SplitSize, outputDirectory);
 
             TimeSpan ts = stopWatch.Elapsed;
             // Format and display the TimeSpan value.
@@ -208,6 +214,31 @@ namespace SynapseDemoDataGenerator
             Console.WriteLine("RunTime " + elapsedTime);
 
             Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
+        }
+
+        static void GenerateStreamEvents(int generateCount, int accountStartId, int accountEndId, int splitCount, string outputDirectory)
+        {
+            Generators.StreamingEventGenerator streamgenerator = new Generators.StreamingEventGenerator(generateCount, accountStartId, accountEndId, splitCount);
+
+            streamgenerator.Generate();
+
+            TimeSpan ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
+
+            streamgenerator.OutputCsv("StreamingEvents", outputDirectory);
+
+            ts = stopWatch.Elapsed;
+            // Format and display the TimeSpan value.
+            elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
+
+            Console.WriteLine("Completed! {0} Total Streaming Events created\n", streamgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
         static void StreamingEvents(int generateCount)
