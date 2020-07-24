@@ -117,7 +117,6 @@ namespace SynapseDemoDataGenerator
         static public void GenerateRetail(RetailCommandLineOptions commandLineOptions)
         {
             string outputDirectory = VerifyDirectory(commandLineOptions.output);
-            Console.WriteLine(outputDirectory);
 
             int DiskUseThreshold = Convert.ToInt32(Program.Configuration["UseDiskThreshold"]);
             if (commandLineOptions.startId != 0)

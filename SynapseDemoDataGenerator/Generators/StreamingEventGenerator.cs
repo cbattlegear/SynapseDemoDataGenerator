@@ -8,6 +8,7 @@ using Bogus;
 using System.IO;
 using ProtoBuf;
 using System.Globalization;
+using ExtensionMethods;
 
 namespace SynapseDemoDataGenerator.Generators
 {
@@ -79,6 +80,10 @@ namespace SynapseDemoDataGenerator.Generators
 
             // Create a list of movie ids with related lengths to have consistent durations throughout a single generation
             int numberOfMovies = 1000;
+            //Create our array of movies and give them a good shake
+            var movieArray = Enumerable.Range(1, numberOfMovies+1).ToArray();
+            r.Shuffle(movieArray);
+
             int[] movieLengthArray = new int[numberOfMovies];
             for (int i = 0; i < numberOfMovies; i++)
             {
@@ -96,13 +101,13 @@ namespace SynapseDemoDataGenerator.Generators
                 //Make a constant session id
                 Guid sessionId = Guid.NewGuid();
                 //Pick our movie
-                int movieId = r.Next(1000);
+                int movieId = movieArray[WeightedInteger(0, 999)];
                 //How long is the movie?
                 int movieLength = movieLengthArray[movieId];
                 //Get that start time
                 DateTime startMovie = RandomDateTime(r);
                 //Get a random user
-                int userId = r.Next(StartingUserId, EndingUserId);
+                int userId = WeightedInteger(StartingUserId, EndingUserId);
                 //Pick our platform type
                 string platformType = platformTypes[r.Next(platformTypes.Length)];
                 //Based on the type, get the specific platform

@@ -8,6 +8,9 @@ using System.Globalization;
 using ExtensionMethods;
 using CsvHelper;
 using ProtoBuf;
+using Bogus;
+using Bogus.Extensions;
+using Bogus.Distributions.Gaussian;
 
 namespace SynapseDemoDataGenerator.Generators
 {
@@ -18,6 +21,7 @@ namespace SynapseDemoDataGenerator.Generators
         public int SplitAmount;
         public List<T> items = new List<T>();
         public int ItemsCreated = 0;
+        public Randomizer r = new Randomizer();
 
         public Generator(int numberToGenerate, int startingId, int splitCount)
         {
@@ -129,6 +133,15 @@ namespace SynapseDemoDataGenerator.Generators
                 Directory.Delete("CacheData\\", true);
             }
             Console.WriteLine("Finished writing CSV files to {0}.", outputDirectoryBase + directoryName);
+        }
+
+        public int WeightedInteger(int beginInt, int endInt)
+        {
+
+            double i = r.GaussianDouble(0.5, 0.1);
+            if (i < 0) { i = 0.001; }
+            if (i > 1) { i = 0.999; }
+            return (int)Math.Round((((endInt - beginInt) * i) + beginInt));
         }
     }
 }
