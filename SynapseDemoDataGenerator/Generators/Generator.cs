@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Globalization;
+using System.Text.Json;
 using ExtensionMethods;
 using CsvHelper;
 using ProtoBuf;
@@ -126,6 +127,93 @@ namespace SynapseDemoDataGenerator.Generators
                             }
                             fileCount++;
                            
+                        }
+                    }
+                }
+                // Wipe our cache directory after writing our data
+                Directory.Delete("CacheData\\", true);
+            }
+            Console.WriteLine("Finished writing CSV files to {0}.", outputDirectoryBase + directoryName);
+        }
+
+        public void OutputJson(string Filename, string outputDirectoryBase)
+        {
+            // Determine the directory name and create it
+            // Currently just taking Item 2 as all our types are three part named currently Probably should make it more generic...
+            string directoryName = typeof(T).ToString().Split('.')[2];
+            Directory.CreateDirectory(outputDirectoryBase + directoryName);
+            Console.WriteLine("Beginning to write JSON files to {0}.", outputDirectoryBase + directoryName);
+            // Dealing with large generation memory issues
+            if (GenerateCount < Convert.ToInt32(Program.Configuration["UseDiskThreshold"]))
+            {
+                // If the split amount is zero (or less just to deal with negatives) don't split
+                if (SplitAmount <= 0)
+                {
+                    using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + ".json"))
+                    {
+                        writer.Write(JsonSerializer.Serialize(items));
+                    }
+                }
+                else
+                {
+                    int fileCount = 1;
+                    foreach (var splits in items.Split(SplitAmount))
+                    {
+                        using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + fileCount.ToString() + ".json"))
+                        {
+                            writer.Write(JsonSerializer.Serialize(splits));
+                        }
+                        fileCount++;
+                    }
+                }
+            }
+            else
+            // For large generations we will read in the files, once complete delete the cache folder
+            {
+                // If the split amount is zero (or less just to deal with negatives) don't split (append to the file after reading our binary)
+                if (SplitAmount <= 0)
+                {
+                    bool firstFile = true;
+                    string[] cacheFiles = Directory.GetFiles("CacheData\\");
+                    foreach (string file in cacheFiles)
+                    {
+                        using (Stream cache = File.Open(file, FileMode.Open))
+                        {
+                            items = Serializer.DeserializeItems<T>(cache, PrefixStyle.Base128, 1).ToList();
+                            if (firstFile)
+                            {
+                                using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + ".json"))
+                                {
+                                    writer.Write(JsonSerializer.Serialize(items));
+                                }
+                                firstFile = false;
+                            }
+                            else
+                            {
+                                using (var stream = File.Open(outputDirectoryBase + directoryName + "\\" + Filename + ".json", FileMode.Append))
+                                    using (var writer = new StreamWriter(stream))
+                                        writer.Write(JsonSerializer.Serialize(items));
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    int fileCount = 1;
+                    string[] cacheFiles = Directory.GetFiles("CacheData\\");
+                    foreach (string file in cacheFiles)
+                    {
+                        using (Stream cache = File.Open(file, FileMode.Open))
+                        {
+                            items = Serializer.DeserializeItems<T>(cache, PrefixStyle.Base128, 1).ToList();
+
+                            using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + fileCount.ToString() + ".json"))
+                            {
+                                writer.Write(JsonSerializer.Serialize(items));
+                            }
+                            fileCount++;
+
                         }
                     }
                 }
