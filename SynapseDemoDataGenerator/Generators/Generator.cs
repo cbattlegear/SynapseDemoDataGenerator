@@ -151,7 +151,20 @@ namespace SynapseDemoDataGenerator.Generators
                 {
                     using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + ".json"))
                     {
-                        writer.Write(JsonSerializer.Serialize(items));
+                        //Work around JsonSerializer being bad at large lists
+                        writer.Write("[");
+                        int totalItems = items.Count;
+                        for(int i = 0; i < totalItems; i++)
+                        {
+                            if(i + 1 == totalItems)
+                            {
+                                writer.Write(JsonSerializer.Serialize(items[i]) + "]");
+                            } else
+                            {
+                                writer.Write(JsonSerializer.Serialize(items[i]) + ",");
+                            }
+                        }
+
                     }
                 }
                 else
@@ -161,7 +174,21 @@ namespace SynapseDemoDataGenerator.Generators
                     {
                         using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + fileCount.ToString() + ".json"))
                         {
-                            writer.Write(JsonSerializer.Serialize(splits));
+                            List<T> splithold = splits.ToList();
+                            //Work around JsonSerializer being bad at large lists
+                            writer.Write("[");
+                            int totalItems = splithold.Count;
+                            for (int i = 0; i < totalItems; i++)
+                            {
+                                if (i + 1 == totalItems)
+                                {
+                                    writer.Write(JsonSerializer.Serialize(splithold[i]) + "]");
+                                }
+                                else
+                                {
+                                    writer.Write(JsonSerializer.Serialize(splithold[i]) + ",");
+                                }
+                            }
                         }
                         fileCount++;
                     }
@@ -173,33 +200,58 @@ namespace SynapseDemoDataGenerator.Generators
                 // If the split amount is zero (or less just to deal with negatives) don't split (append to the file after reading our binary)
                 if (SplitAmount <= 0)
                 {
-                    bool firstFile = true;
+                    int fileCount = 1;
                     string[] cacheFiles = Directory.GetFiles("CacheData\\");
+                    int totalFiles = cacheFiles.Length;
                     foreach (string file in cacheFiles)
                     {
                         using (Stream cache = File.Open(file, FileMode.Open))
                         {
                             items = Serializer.DeserializeItems<T>(cache, PrefixStyle.Base128, 1).ToList();
-                            if (firstFile)
+                            if (fileCount == 1)
                             {
                                 using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + ".json"))
                                 {
-                                    writer.Write(JsonSerializer.Serialize(items));
+                                    //Work around JsonSerializer being bad at large lists
+                                    writer.Write("[");
+                                    int totalItems = items.Count;
+                                    for (int i = 0; i < totalItems; i++)
+                                    {
+                                            writer.Write(JsonSerializer.Serialize(items[i]) + ",");   
+                                    }
                                 }
-                                firstFile = false;
                             }
                             else
                             {
                                 using (var stream = File.Open(outputDirectoryBase + directoryName + "\\" + Filename + ".json", FileMode.Append))
+                                {
                                     using (var writer = new StreamWriter(stream))
-                                        writer.Write(JsonSerializer.Serialize(items));
+                                    {
+                                        //Work around JsonSerializer being bad at large lists
+                                        writer.Write("[");
+                                        int totalItems = items.Count;
+                                        for (int i = 0; i < totalItems; i++)
+                                        {
+                                            if (i + 1 == totalItems && fileCount == totalFiles)
+                                            {
+                                                writer.Write(JsonSerializer.Serialize(items[i]) + "]");
+                                            }
+                                            else
+                                            {
+                                                writer.Write(JsonSerializer.Serialize(items[i]) + ",");
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
+                        fileCount++;
                     }
 
                 }
                 else
                 {
+                    //Output split files based on cache files
                     int fileCount = 1;
                     string[] cacheFiles = Directory.GetFiles("CacheData\\");
                     foreach (string file in cacheFiles)
@@ -210,7 +262,19 @@ namespace SynapseDemoDataGenerator.Generators
 
                             using (var writer = new StreamWriter(outputDirectoryBase + directoryName + "\\" + Filename + fileCount.ToString() + ".json"))
                             {
-                                writer.Write(JsonSerializer.Serialize(items));
+                                writer.Write("[");
+                                int totalItems = items.Count;
+                                for (int i = 0; i < totalItems; i++)
+                                {
+                                    if (i + 1 == totalItems)
+                                    {
+                                        writer.Write(JsonSerializer.Serialize(items[i]) + "]");
+                                    }
+                                    else
+                                    {
+                                        writer.Write(JsonSerializer.Serialize(items[i]) + ",");
+                                    }
+                                }
                             }
                             fileCount++;
 
@@ -220,7 +284,7 @@ namespace SynapseDemoDataGenerator.Generators
                 // Wipe our cache directory after writing our data
                 Directory.Delete("CacheData\\", true);
             }
-            Console.WriteLine("Finished writing CSV files to {0}.", outputDirectoryBase + directoryName);
+            Console.WriteLine("Finished writing JSON files to {0}.", outputDirectoryBase + directoryName);
         }
 
         public int WeightedInteger(int beginInt, int endInt)

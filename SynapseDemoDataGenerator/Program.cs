@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace SynapseDemoDataGenerator
 {
+    public enum FormatOptions { csv, json }
     public class RetailCommandLineOptions
     {
         public int numberOfAccounts { get; set; }
@@ -22,6 +23,7 @@ namespace SynapseDemoDataGenerator
         public int numberOfEach { get; set; }
         public int startId { get; set; }
         public DirectoryInfo output { get; set; }
+        public FormatOptions format { get; set; }
     }
     class Program
     {
@@ -62,6 +64,8 @@ namespace SynapseDemoDataGenerator
 
                 new Option<int>("--numberofeach", description: "(Optional) Use to generate the same number of objects for all types"),
                 new Option<int>("--startid", description: "(Optional) Use to have all objects start on the same ID number"),
+
+                new Option<FormatOptions>("--format", getDefaultValue: () => FormatOptions.csv, description: "(Optional) Format to output currently can be csv or json, defaults to csv"),
 
                 new Option<string>("--output", description: "(Optional) Output directory for the created data")
             };
@@ -152,10 +156,10 @@ namespace SynapseDemoDataGenerator
 
             stopWatch.Start();
 
-            GenerateAccounts(AccountAmount, AccountStartID, SplitSize, outputDirectory);
-            GenerateKiosks(KioskAmount, KioskStartID, SplitSize, outputDirectory);
-            GenerateRentals(RentalAmount, RentalStartID, AccountStartID, AccountStartID + AccountAmount, KioskStartID, KioskStartID + KioskAmount, SplitSize, outputDirectory);
-            GenerateStreamEvents(StreamEventAmount, AccountStartID, AccountStartID + AccountAmount, SplitSize, outputDirectory);
+            GenerateAccounts(AccountAmount, AccountStartID, SplitSize, outputDirectory, commandLineOptions.format);
+            GenerateKiosks(KioskAmount, KioskStartID, SplitSize, outputDirectory, commandLineOptions.format);
+            GenerateRentals(RentalAmount, RentalStartID, AccountStartID, AccountStartID + AccountAmount, KioskStartID, KioskStartID + KioskAmount, SplitSize, outputDirectory, commandLineOptions.format);
+            GenerateStreamEvents(StreamEventAmount, AccountStartID, AccountStartID + AccountAmount, SplitSize, outputDirectory, commandLineOptions.format);
 
             TimeSpan ts = stopWatch.Elapsed;
             // Format and display the TimeSpan value.
@@ -165,7 +169,7 @@ namespace SynapseDemoDataGenerator
             Console.WriteLine("Total RunTime " + elapsedTime);
         }
 
-        static void GenerateKiosks(int generateCount, int startID, int splitCount, string outputDirectory)
+        static void GenerateKiosks(int generateCount, int startID, int splitCount, string outputDirectory, FormatOptions format)
         {
             Generators.KioskGenerator kioskgenerator = new Generators.KioskGenerator(generateCount, startID, splitCount);
 
@@ -178,7 +182,15 @@ namespace SynapseDemoDataGenerator
                 ts.Milliseconds / 10);
             Console.WriteLine("RunTime " + elapsedTime);
 
-            kioskgenerator.OutputCsv("Kiosks", outputDirectory);
+            switch (format)
+            {
+                case FormatOptions.csv:
+                    kioskgenerator.OutputCsv("Kiosks", outputDirectory);
+                    break;
+                case FormatOptions.json:
+                    kioskgenerator.OutputJson("Kiosks", outputDirectory);
+                    break;
+            }
 
             ts = stopWatch.Elapsed;
             // Format and display the TimeSpan value.
@@ -190,7 +202,7 @@ namespace SynapseDemoDataGenerator
             Console.WriteLine("Completed! {0} Total Kiosks created\n", kioskgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
-        static void GenerateRentals(int generateCount, int startID, int accountStartId, int accountEndId, int kioskStartId, int kioskEndId, int splitCount, string outputDirectory)
+        static void GenerateRentals(int generateCount, int startID, int accountStartId, int accountEndId, int kioskStartId, int kioskEndId, int splitCount, string outputDirectory, FormatOptions format)
         {
             Generators.RentalGenerator rentalgenerator = new Generators.RentalGenerator(generateCount, startID, accountStartId, accountEndId, kioskStartId, kioskEndId, splitCount);
 
@@ -203,7 +215,15 @@ namespace SynapseDemoDataGenerator
                 ts.Milliseconds / 10);
             Console.WriteLine("RunTime " + elapsedTime);
 
-            rentalgenerator.OutputCsv("Rentals", outputDirectory);
+            switch (format)
+            {
+                case FormatOptions.csv:
+                    rentalgenerator.OutputCsv("Rentals", outputDirectory);
+                    break;
+                case FormatOptions.json:
+                    rentalgenerator.OutputJson("Rentals", outputDirectory);
+                    break;
+            }
 
             ts = stopWatch.Elapsed;
             // Format and display the TimeSpan value.
@@ -215,7 +235,7 @@ namespace SynapseDemoDataGenerator
             Console.WriteLine("Completed! {0} Total Rentals created\n", rentalgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
-        static void GenerateStreamEvents(int generateCount, int accountStartId, int accountEndId, int splitCount, string outputDirectory)
+        static void GenerateStreamEvents(int generateCount, int accountStartId, int accountEndId, int splitCount, string outputDirectory, FormatOptions format)
         {
             Generators.StreamingEventGenerator streamgenerator = new Generators.StreamingEventGenerator(generateCount, accountStartId, accountEndId, splitCount);
 
@@ -228,7 +248,15 @@ namespace SynapseDemoDataGenerator
                 ts.Milliseconds / 10);
             Console.WriteLine("RunTime " + elapsedTime);
 
-            streamgenerator.OutputCsv("StreamingEvents", outputDirectory);
+            switch (format)
+            {
+                case FormatOptions.csv:
+                    streamgenerator.OutputCsv("StreamingEvents", outputDirectory);
+                    break;
+                case FormatOptions.json:
+                    streamgenerator.OutputJson("StreamingEvents", outputDirectory);
+                    break;
+            }
 
             ts = stopWatch.Elapsed;
             // Format and display the TimeSpan value.
@@ -240,13 +268,7 @@ namespace SynapseDemoDataGenerator
             Console.WriteLine("Completed! {0} Total Streaming Events created\n", streamgenerator.ItemsCreated.ToString("N0", CultureInfo.InvariantCulture));
         }
 
-        static void StreamingEvents(int generateCount)
-        {
-            //TODO
-            //var Json = ConvertToJson.Dump("OBJECT HERE");
-        }
-
-        static void GenerateAccounts(int generateCount, int startID, int splitCount, string outputDirectory)
+        static void GenerateAccounts(int generateCount, int startID, int splitCount, string outputDirectory, FormatOptions format)
         {
             Generators.UserAccountGenerator useraccountgenerator = new Generators.UserAccountGenerator(generateCount, startID, splitCount);
 
@@ -259,7 +281,15 @@ namespace SynapseDemoDataGenerator
                 ts.Milliseconds / 10);
             Console.WriteLine("RunTime " + elapsedTime);
 
-            useraccountgenerator.OutputCsv("Accounts", outputDirectory);
+            switch (format)
+            {
+                case FormatOptions.csv:
+                    useraccountgenerator.OutputCsv("Accounts", outputDirectory);
+                    break;
+                case FormatOptions.json:
+                    useraccountgenerator.OutputJson("Accounts", outputDirectory);
+                    break;
+            }
 
             ts = stopWatch.Elapsed;
             // Format and display the TimeSpan value.
