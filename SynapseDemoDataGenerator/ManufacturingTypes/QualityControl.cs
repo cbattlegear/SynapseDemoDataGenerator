@@ -9,7 +9,7 @@ namespace SynapseDemoDataGenerator.ManufacturingTypes
         public int DeviceId { get; set; }
         public bool PowerCycle { get; set; }
         public bool SoftwareOperation { get; set; }
-        public bool ClimateReadingTest { get; set; }
+        public bool ClimateReading { get; set; }
         public bool NetworkConnectivity { get; set; }
         public bool QcPass { get; set; }
     }
