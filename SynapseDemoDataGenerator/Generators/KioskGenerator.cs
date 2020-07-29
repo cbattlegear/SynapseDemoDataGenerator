@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace SynapseDemoDataGenerator.Generators
 {
-    class KioskGenerator : Generator<Types.Kiosk>
+    class KioskGenerator : Generator<RetailTypes.Kiosk>
     {
         public KioskGenerator(int numberToGenerate, int startingId, int splitCount) : base(numberToGenerate, startingId, splitCount)
         {
@@ -22,7 +22,7 @@ namespace SynapseDemoDataGenerator.Generators
             int DiskUseThreshold = Convert.ToInt32(Program.Configuration["UseDiskThreshold"]);
             Console.WriteLine("Generating Kiosks, starting with kiosk ID {0}", StartId);
 
-            var newKiosk = new Faker<Types.Kiosk>("en")
+            var newKiosk = new Faker<RetailTypes.Kiosk>("en")
 
                 .RuleFor(u => u.KioskId, f => StartId++)
                 .RuleFor(u => u.Address, (f, u) => f.Address.StreetAddress())

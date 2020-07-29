@@ -12,7 +12,7 @@ using ExtensionMethods;
 
 namespace SynapseDemoDataGenerator.Generators
 {
-    class StreamingEventGenerator : Generator<Types.StreamingEvent>
+    class StreamingEventGenerator : Generator<RetailTypes.StreamingEvent>
     {
         private int StartingUserId;
         private int EndingUserId;
@@ -74,7 +74,7 @@ namespace SynapseDemoDataGenerator.Generators
             }
 
         }
-        private List<Types.StreamingEvent> PrivateGenerator(int GenerateCount)
+        private List<RetailTypes.StreamingEvent> PrivateGenerator(int GenerateCount)
         {
             Random r = new Random();
 
@@ -90,7 +90,7 @@ namespace SynapseDemoDataGenerator.Generators
                 movieLengthArray[i] = r.Next(4680, 9000);
             }
 
-            List<Types.StreamingEvent> events = new List<Types.StreamingEvent>();
+            List<RetailTypes.StreamingEvent> events = new List<RetailTypes.StreamingEvent>();
 
             //Cut our requested generation count in half as we always have at least two messages per event
             int ActualGenerateCount = (int)(GenerateCount / 2);
@@ -119,14 +119,14 @@ namespace SynapseDemoDataGenerator.Generators
                     case 0:
                         {
                             //Create our starting event
-                            Types.StreamingEvent s = new Types.StreamingEvent
+                            RetailTypes.StreamingEvent s = new RetailTypes.StreamingEvent
                             {
                                 StreamingId = Guid.NewGuid(),
                                 SessionId = sessionId,
                                 EventTime = startMovie,
                                 UserId = userId,
                                 MediaId = movieId,
-                                EventType = Types.EventType.Start,
+                                EventType = RetailTypes.EventType.Start,
                                 Duration = 0,
                                 PlatformType = platformType,
                                 PlatformName = platformName
@@ -136,14 +136,14 @@ namespace SynapseDemoDataGenerator.Generators
                             int watchTime = r.Next(movieLength - 1200);
                             DateTime watchTimeDT = startMovie.AddSeconds(watchTime);
                             //Create our ending event, any amount of time, minus 20 minutes
-                            s = new Types.StreamingEvent
+                            s = new RetailTypes.StreamingEvent
                             {
                                 StreamingId = Guid.NewGuid(),
                                 SessionId = sessionId,
                                 EventTime = watchTimeDT,
                                 UserId = userId,
                                 MediaId = movieId,
-                                EventType = Types.EventType.Stop,
+                                EventType = RetailTypes.EventType.Stop,
                                 Duration = watchTime,
                                 PlatformType = platformType,
                                 PlatformName = platformName
@@ -155,14 +155,14 @@ namespace SynapseDemoDataGenerator.Generators
                     case 1:
                         {
                             //Create our starting event
-                            Types.StreamingEvent s = new Types.StreamingEvent
+                            RetailTypes.StreamingEvent s = new RetailTypes.StreamingEvent
                             {
                                 StreamingId = Guid.NewGuid(),
                                 SessionId = sessionId,
                                 EventTime = startMovie,
                                 UserId = userId,
                                 MediaId = movieId,
-                                EventType = Types.EventType.Start,
+                                EventType = RetailTypes.EventType.Start,
                                 Duration = 0,
                                 PlatformType = platformType,
                                 PlatformName = platformName
@@ -170,14 +170,14 @@ namespace SynapseDemoDataGenerator.Generators
                             events.Add(s);
 
                             //Create our completion event
-                            s = new Types.StreamingEvent
+                            s = new RetailTypes.StreamingEvent
                             {
                                 StreamingId = Guid.NewGuid(),
                                 SessionId = sessionId,
                                 EventTime = startMovie.AddSeconds(movieLength),
                                 UserId = userId,
                                 MediaId = movieId,
-                                EventType = Types.EventType.Complete,
+                                EventType = RetailTypes.EventType.Complete,
                                 Duration = movieLength,
                                 PlatformType = platformType,
                                 PlatformName = platformName
@@ -199,14 +199,14 @@ namespace SynapseDemoDataGenerator.Generators
                             while (streamTime + 5 < watchTime)
                             {
                                 //Create our starting event
-                                Types.StreamingEvent s = new Types.StreamingEvent
+                                RetailTypes.StreamingEvent s = new RetailTypes.StreamingEvent
                                 {
                                     StreamingId = Guid.NewGuid(),
                                     SessionId = sessionId,
                                     EventTime = startJump,
                                     UserId = userId,
                                     MediaId = movieId,
-                                    EventType = Types.EventType.Start,
+                                    EventType = RetailTypes.EventType.Start,
                                     Duration = streamTime,
                                     PlatformType = platformType,
                                     PlatformName = platformName
@@ -217,14 +217,14 @@ namespace SynapseDemoDataGenerator.Generators
                                 startJump = startJump.AddSeconds(watchAmount);
 
                                 //Create our ending event
-                                s = new Types.StreamingEvent
+                                s = new RetailTypes.StreamingEvent
                                 {
                                     StreamingId = Guid.NewGuid(),
                                     SessionId = sessionId,
                                     EventTime = startJump,
                                     UserId = userId,
                                     MediaId = movieId,
-                                    EventType = Types.EventType.Stop,
+                                    EventType = RetailTypes.EventType.Stop,
                                     Duration = watchAmount,
                                     PlatformType = platformType,
                                     PlatformName = platformName
@@ -252,14 +252,14 @@ namespace SynapseDemoDataGenerator.Generators
                             while (streamTime < watchTime - 300)
                             {
                                 //Create our starting event
-                                Types.StreamingEvent s = new Types.StreamingEvent
+                                RetailTypes.StreamingEvent s = new RetailTypes.StreamingEvent
                                 {
                                     StreamingId = Guid.NewGuid(),
                                     SessionId = sessionId,
                                     EventTime = startJump,
                                     UserId = userId,
                                     MediaId = movieId,
-                                    EventType = Types.EventType.Start,
+                                    EventType = RetailTypes.EventType.Start,
                                     Duration = streamTime,
                                     PlatformType = platformType,
                                     PlatformName = platformName
@@ -273,14 +273,14 @@ namespace SynapseDemoDataGenerator.Generators
                                 if(streamTime >= watchTime - 300)
                                 {
                                     //Create our completion event
-                                    s = new Types.StreamingEvent
+                                    s = new RetailTypes.StreamingEvent
                                     {
                                         StreamingId = Guid.NewGuid(),
                                         SessionId = sessionId,
                                         EventTime = startJump,
                                         UserId = userId,
                                         MediaId = movieId,
-                                        EventType = Types.EventType.Complete,
+                                        EventType = RetailTypes.EventType.Complete,
                                         Duration = movieLength,
                                         PlatformType = platformType,
                                         PlatformName = platformName
@@ -289,14 +289,14 @@ namespace SynapseDemoDataGenerator.Generators
                                 } else
                                 {
                                     //Create our ending event
-                                    s = new Types.StreamingEvent
+                                    s = new RetailTypes.StreamingEvent
                                     {
                                         StreamingId = Guid.NewGuid(),
                                         SessionId = sessionId,
                                         EventTime = startJump,
                                         UserId = userId,
                                         MediaId = movieId,
-                                        EventType = Types.EventType.Stop,
+                                        EventType = RetailTypes.EventType.Stop,
                                         Duration = watchAmount,
                                         PlatformType = platformType,
                                         PlatformName = platformName

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ProtoBuf;
 
-namespace SynapseDemoDataGenerator.Types
+namespace SynapseDemoDataGenerator.RetailTypes
 {
     public enum EventType { Start, Stop, Complete }
     [ProtoContract]

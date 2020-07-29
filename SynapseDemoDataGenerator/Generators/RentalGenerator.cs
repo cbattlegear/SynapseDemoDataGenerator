@@ -14,7 +14,7 @@ using ExtensionMethods;
 
 namespace SynapseDemoDataGenerator.Generators
 {
-    class RentalGenerator : Generator<Types.Rental>
+    class RentalGenerator : Generator<RetailTypes.Rental>
     {
         private int StartingUserId;
         private int EndingUserId;
@@ -43,7 +43,7 @@ namespace SynapseDemoDataGenerator.Generators
             var movieArray = Enumerable.Range(1, 1000).ToArray();
             rand.Shuffle(movieArray);
 
-            var newRental = new Faker<Types.Rental>("en")
+            var newRental = new Faker<RetailTypes.Rental>("en")
 
                 .RuleFor(u => u.RentalId, f => StartId++)
                 .RuleFor(u => u.UserId, (f, u) => WeightedInteger(StartingUserId, EndingUserId))

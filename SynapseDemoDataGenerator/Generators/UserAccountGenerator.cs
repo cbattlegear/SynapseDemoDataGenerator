@@ -12,7 +12,7 @@ using ExtensionMethods;
 
 namespace SynapseDemoDataGenerator.Generators
 {
-    class UserAccountGenerator : Generator<Types.UserAccount>
+    class UserAccountGenerator : Generator<RetailTypes.UserAccount>
     {
         public UserAccountGenerator(int numberToGenerate, int startingId, int splitCount) : base(numberToGenerate, startingId, splitCount)
         {
@@ -23,7 +23,7 @@ namespace SynapseDemoDataGenerator.Generators
             int DiskUseThreshold = Convert.ToInt32(Program.Configuration["UseDiskThreshold"]);
             Console.WriteLine("Generating User Accounts, starting with UserID {0}", StartId);
 
-            var newUser = new Faker<Types.UserAccount>("en")
+            var newUser = new Faker<RetailTypes.UserAccount>("en")
 
                 .RuleFor(u => u.UserId, f => StartId++)
                 .RuleFor(u => u.FirstName, (f, u) => f.Name.FirstName(f.Person.Gender))

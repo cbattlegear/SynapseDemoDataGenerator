@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ProtoBuf;
 
-namespace SynapseDemoDataGenerator.Types
+namespace SynapseDemoDataGenerator.RetailTypes
 {
     [ProtoContract]
     public class Kiosk
